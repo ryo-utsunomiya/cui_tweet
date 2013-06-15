@@ -9,8 +9,23 @@
 * @see codebird-php(https://github.com/mynetx/codebird-php)
 */
 
-require_once __DIR__ . '/codebird/src/codebird.php'; // Codebirdライブラリ
-require_once __DIR__ . '/config.php'; // コンシューマキーとアクセストークンの設定ファイル
+// Codebirdライブラリを読み込み
+$libDir = __DIR__ . '/codebird/src/codebird.php';
+if (is_readable($libDir)) {
+    require_once $libDir;
+} else {
+    echo 'codebirdライブラリの読み込みに失敗しました', PHP_EOL;
+    exit;
+}
+
+// コンシューマキーとアクセストークンの設定ファイルを読み込み
+$configDir = __DIR__ . '/config.php';
+if (is_readable($configDir)) {
+    require_once $configDir;
+} else { // @todo 設定ファイルが無い場合にウィザードで設定 
+    echo 'config.phpの読み込みに失敗しました', PHP_EOL;
+    exit;
+}
 
 $cb = new \Codebird\Codebird(); // Codebirdインスタンスを作成
 
@@ -20,8 +35,9 @@ $cb->setToken($access_token, $access_token_secret);
 
 // ユーザ名をローカルファイルから読み取り
 $userNameDir = __DIR__ . '/username.txt';
-$useName = @file_get_contents($userNameDir);
-if (false === $userName) { // ユーザ名設定ファイルの読み込みに失敗した場合はファイルを新規作成
+if (is_readable($userNameDir)) {
+    $useName = file_get_contents($userNameDir);
+} else { // ユーザ名設定ファイルの読み込みに失敗した場合はファイルを新規作成
     file_put_contents($userNameDir, '');
 }
 $userName = trim($userName);
