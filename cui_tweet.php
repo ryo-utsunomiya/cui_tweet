@@ -54,7 +54,11 @@ if (isset($argv[1])) {
     if (is_readable($userNameDir)) {
         $userName = file_get_contents($userNameDir);
     } else { // ユーザ名設定ファイルの読み込みに失敗した場合はファイルを新規作成
-        file_put_contents($userNameDir, '');
+        $isSuccess = file_put_contents($userNameDir, '');
+        if (false === $isSuccess) {
+            echo 'ユーザ名設定ファイルの書き込みに失敗しました。書き込み権限を確認してください。', PHP_EOL;
+            exit;
+        }
     }
     $userName = trim($userName);
     echo $userName, '>';
